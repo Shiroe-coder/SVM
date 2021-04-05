@@ -1,0 +1,90 @@
+#Ngô Hoàng ân- B1709524
+'''
+import pandas as pd
+from sklearn import tree
+from sklearn import svm
+import numpy as np
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
+iris = datasets.load_iris()
+columns=["Petal Length","Petal Width","Sepal Length","Sepal Width"];
+X = pd.DataFrame(iris.data, columns=columns)
+y = iris.target
+print(X.describe())
+print(y)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+model = svm.SVC(kernel = 'linear', C = 1e5)
+model.fit(X_train, y_train)
+prediction = model.predict(X_test)
+print('w = ',model.coef_ ) # chỉ số w
+print('b = ',model.intercept_ ) # chỉ số b
+
+print("Do chinh xác cua mo hinh voi nghi thuc kiem tra hold-out: %.3f" %model.score(X_test, y_test))
+'''
+'''
+bảng mô tả những gì đã làm
+- load tập dữ liệu iris từ dữ liệu có sẵn của thư viện sklearn
+- lấy các dữ liệu từ tập dữ liệu ra cho vào x và y
+- chia tập dữ liệu ra làm 2 phần , 1 phần dùng huấn luyện và 1 phần dùng để kiểm tra 
+- huấn luyện mô hình svm.SVC bằng tập dữ liệu huấn luyện
+- các chỉ số w vầ b lần lượt đã được in ra 
+- kiểm tra độ chính xác của mô hình bằng nghi thức hold-out
+'''
+import numpy as np
+from sklearn.svm import SVC
+
+X1 = [[1,3], [3,3], [4,0], [3,0], [2, 2]]
+y1 = [1, 1, 1, 1, 1]
+X2 = [[0,0], [1,1], [1,2], [2,0]]
+y2 = [-1, -1, -1, -1]
+X = np.array(X1 + X2)
+y = y1 + y2
+
+clf = SVC(kernel='linear', C=1E10)
+clf.fit(X, y)
+print (clf.support_vectors_)
+import matplotlib.pyplot as plt
+
+def plot_svc_decision_function(clf, ax=None, plot_support=True):
+    """Plot the decision function for a 2D SVC"""
+    if ax is None:
+        ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # create grid to evaluate model
+    x = np.linspace(xlim[0], xlim[1], 30)
+    y = np.linspace(ylim[0], ylim[1], 30)
+    Y, X = np.meshgrid(y, x)
+    xy = np.vstack([X.ravel(), Y.ravel()]).T
+    P = clf.decision_function(xy).reshape(X.shape)
+
+    # plot decision boundary and margins
+    ax.contour(X, Y, P, colors='k',
+               levels=[-1, 0, 1], alpha=0.5,
+               linestyles=['--', '-', '--'])
+
+    # plot support vectors
+    if plot_support:
+        ax.scatter(clf.support_vectors_[:, 0],
+                   clf.support_vectors_[:, 1],
+                   s=300, linewidth=1, facecolors='none');
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
+
+plt.scatter(X[:, 0], X[:, 1], c=y, s=50, cmap='brg');
+plot_svc_decision_function(clf)
+plt.show()
+from sklearn.model_selection import GridSearchCV
+
+parameter_candidates = [
+  {'C': [0.001, 0.01, 0.1, 1, 5, 10, 100, 1000], 'kernel': ['linear']},
+]
+
+clf = GridSearchCV(estimator=SVC(), param_grid=parameter_candidates, n_jobs=-1)
+clf.fit(X, y)
+print('Best score:', clf.best_score_)
+print('Best C:',clf.best_estimator_.C)
