@@ -1,0 +1,50 @@
+ #Ngô Hoàng Ân - B1709524
+import math
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+
+X = np.c_[(1, 0),
+          (0, 1),
+          (-1, 0),
+          (0, -1),
+          (2, 0),
+          (0, 2),
+          (-2, 0),
+          (0,-2),
+          (0, -3)].T
+Y = [1] * 4 + [-1] * 5
+
+print(X , Y)
+
+fignum = 1
+clf = SVC(kernel='rbf', degree = 3, gamma=1, C = 100)
+clf.fit(X, Y)
+fig, ax = plt.subplots()
+plt.figure(fignum, figsize=(4, 3))
+plt.clf()
+
+plt.scatter(clf.support_vectors_[:, 0], clf.support_vectors_[:, 1], s=80,facecolors='None')
+plt.plot(X[:4, 0], X[:4, 1], 'ro', markersize = 8)
+plt.plot(X[4:, 0], X[4:, 1], 'bs', markersize = 8)
+
+plt.axis('tight')
+x_min = -3
+x_max = 3
+y_min = -4
+y_max = 3
+XX, YY = np.mgrid[x_min:x_max:200j, y_min:y_max:200j]
+Z = clf.decision_function(np.c_[XX.ravel(), YY.ravel()])
+
+Z = Z.reshape(XX.shape)
+plt.figure(fignum, figsize=(10,20))
+CS = plt.contourf(XX, YY, np.sign(Z), 200, cmap='jet', alpha = .2)
+plt.contour(XX, YY, Z, colors=['k', 'k', 'k'], linestyles=['--', '-', '--'],levels=[-.5, 0, .5])
+plt.title('kernel-rbf', fontsize = 20)
+plt.xlim(x_min, x_max)
+plt.ylim(y_min, y_max)
+
+plt.xticks(())
+plt.yticks(())
+fignum = fignum + 1
+plt.show()
